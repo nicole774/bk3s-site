@@ -1,4 +1,4 @@
-# Guide de démarrage — Site BK Dimensions 3S Consulting
+# Guide de démarrage — Site BK Dimension 3S Consulting
 
 ## 1. Structure du projet
 

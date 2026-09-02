@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Postuler — BK Dimension 3S Consulting</title>
+<meta name="description" content="Déposez votre candidature et votre CV auprès de BK Dimension 3S Consulting." />
+<link rel="icon" href="assets/logo.jpeg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.jpeg" alt="Logo BK Dimension 3S Consulting" />
+      <span class="brand-text"><strong>BK Dimension</strong><span>3S Consulting</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="apropos.html">À propos</a></li>
+        <li><a href="activites.html">Nos activités</a></li>
+        <li><a href="offres.html">Offres d'emploi</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <span class="nav-phone">(226) 70 94 60 96</span>
+      <a href="contact.html" class="btn btn-gold">Nous contacter</a>
+      <button class="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <span class="breadcrumb">Accueil / Offres d'emploi / Postuler</span>
+    <h1 style="color:#fff; margin-top:14px;">Déposer votre candidature</h1>
+    <p style="color:rgba(255,255,255,0.75); max-width:560px;">Remplissez le formulaire ci-dessous et joignez votre CV. Nous étudierons votre profil avec attention.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container" style="max-width:640px;">
+
+    <!-- ============================================================
+         IMPORTANT : remplacez YOUR_FORM_ID ci-dessous par l'identifiant
+         de votre formulaire Formspree (voir le guide pas-à-pas fourni).
+         Tant que ce n'est pas fait, le formulaire ne pourra pas envoyer
+         de vrais emails.
+    ============================================================= -->
+    <form id="candidature-form" class="form-grid" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data">
+
+      <div class="form-row">
+        <div>
+          <label for="c-name">Nom complet</label>
+          <input type="text" id="c-name" name="Nom complet" required />
+        </div>
+        <div>
+          <label for="c-phone">Téléphone</label>
+          <input type="tel" id="c-phone" name="Téléphone" required />
+        </div>
+      </div>
+
+      <div>
+        <label for="c-email">Adresse email</label>
+        <input type="email" id="c-email" name="Email" required />
+      </div>
+
+      <div>
+        <label for="c-poste">Poste visé</label>
+        <input type="text" id="c-poste" name="Poste visé" />
+      </div>
+
+      <input type="hidden" id="c-ref" name="Référence offre" value="" />
+      <p id="c-ref-display" class="file-hint" style="display:none;"></p>
+
+      <div>
+        <label for="c-cv">Votre CV (PDF ou Word)</label>
+        <input type="file" id="c-cv" name="CV" accept=".pdf,.doc,.docx" required />
+        <p class="file-hint">Formats acceptés : PDF, DOC, DOCX — 5 Mo maximum.</p>
+      </div>
+
+      <div>
+        <label for="c-message">Message (facultatif)</label>
+        <textarea id="c-message" name="Message"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-gold" style="width:fit-content;">Envoyer ma candidature</button>
+      <p id="candidature-status" class="form-status"></p>
+    </form>
+
+  </div>
+</section>
+
+<footer class="site-footer" id="footer"></footer>
+
+<script src="js/main.js"></script>
+<script src="js/footer.js"></script>
+<script>
+  // Pré-remplit le champ "Poste visé" et la référence interne si on arrive
+  // depuis un lien "Postuler" de la page offres.html
+  // (ex: candidature.html?poste=Assistant...&ref=BK3S-2026-015)
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var poste = params.get("poste");
+    var ref = params.get("ref");
+    if (poste) {
+      var field = document.getElementById("c-poste");
+      if (field) field.value = decodeURIComponent(poste);
+    }
+    if (ref) {
+      var refField = document.getElementById("c-ref");
+      var refDisplay = document.getElementById("c-ref-display");
+      if (refField) refField.value = ref;
+      if (refDisplay) {
+        refDisplay.textContent = "Référence de l'offre : " + ref;
+        refDisplay.style.display = "block";
+      }
+    }
+  })();
+
+  // Envoi du formulaire directement en JavaScript (fetch) pour rester sur
+  // la page et afficher un message de confirmation, plutôt que de rediriger
+  // vers Formspree.
+  (function () {
+    var form = document.getElementById("candidature-form");
+    var status = document.getElementById("candidature-status");
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      status.textContent = "Envoi en cours...";
+      status.classList.remove("ok");
+      var data = new FormData(form);
+      fetch(form.action, {
+        method: "POST",
+        body: data,
+        headers: { Accept: "application/json" }
+      })
+        .then(function (response) {
+          if (response.ok) {
+            status.textContent = "Merci ! Votre candidature a bien été envoyée.";
+            status.classList.add("ok");
+            form.reset();
+          } else {
+            status.textContent = "Une erreur est survenue. Vérifiez que le formulaire Formspree est bien configuré, ou contactez-nous directement.";
+          }
+        })
+        .catch(function () {
+          status.textContent = "Impossible d'envoyer le message pour le moment. Contactez-nous directement au (226) 70 94 60 96.";
+        });
+    });
+  })();
+</script>
+</body>
+</html>
