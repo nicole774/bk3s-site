@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact — BK Dimensions 3S Consulting</title>
+<meta name="description" content="Contactez BK Dimensions 3S Consulting à Ouagadougou : téléphone, email et formulaire de contact." />
+<link rel="icon" href="assets/logo.jpeg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.jpeg" alt="Logo BK Dimensions 3S Consulting" />
+      <span class="brand-text"><strong>BK Dimensions</strong><span>3S Consulting</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="apropos.html">À propos</a></li>
+        <li><a href="activites.html">Nos activités</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <span class="nav-phone">(226) 70 94 60 96</span>
+      <a href="contact.html" class="btn btn-gold">Nous contacter</a>
+      <button class="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <span class="breadcrumb">Accueil / Contact</span>
+    <h1 style="color:#fff; margin-top:14px;">Parlons de votre projet</h1>
+    <p style="color:rgba(255,255,255,0.75); max-width:560px;">Une question, un besoin en recrutement ou en formation ? Notre équipe vous répond rapidement.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container" style="display:grid; grid-template-columns: 1fr 1fr; gap:56px; align-items:start;">
+
+    <div class="reveal">
+      <span class="eyebrow">Formulaire de contact</span>
+      <h2>Écrivez-nous</h2>
+      <form id="contact-form" class="form-grid">
+        <div class="form-row">
+          <div>
+            <label for="name">Nom complet</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div>
+            <label for="phone">Téléphone</label>
+            <input type="tel" id="phone" name="phone" />
+          </div>
+        </div>
+        <div>
+          <label for="email">Adresse email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+          <label for="subject">Sujet</label>
+          <select id="subject" name="subject">
+            <option>Recrutement</option>
+            <option>Placement</option>
+            <option>Formation</option>
+            <option>Conseil</option>
+            <option>Montage de dossier</option>
+            <option>Événementiel</option>
+            <option>Gestion des ressources humaines</option>
+            <option>Autre demande</option>
+          </select>
+        </div>
+        <div>
+          <label for="message">Votre message</label>
+          <textarea id="message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:fit-content;">Envoyer le message</button>
+        <p id="form-status" class="form-status"></p>
+      </form>
+    </div>
+
+    <div class="reveal">
+      <span class="eyebrow">Coordonnées</span>
+      <h2>Nous joindre</h2>
+      <div class="info-grid" style="grid-template-columns: 1fr;">
+        <div class="info-card">
+          <span class="eyebrow">Téléphones</span>
+          <p>(226) 70 94 60 96</p>
+          <p>(226) 70 54 32 55</p>
+          <p>(226) 65 67 66 58</p>
+          <p>(226) 76 00 25 60</p>
+        </div>
+        <div class="info-card">
+          <span class="eyebrow">Email &amp; site</span>
+          <p>contact@bk3sconsulting.com</p>
+          <p>www.bk3sconsulting.com</p>
+        </div>
+        <div class="info-card">
+          <span class="eyebrow">Siège social</span>
+          <p>Ouagadougou, Burkina Faso</p>
+        </div>
+        <div class="info-card">
+          <span class="eyebrow">Informations légales</span>
+          <p>RCCM : BF-OUA-01-2022-B13-11422</p>
+          <p>IFU : 00244687M</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer" id="footer"></footer>
+
+<script src="js/main.js"></script>
+<script src="js/footer.js"></script>
+</body>
+</html>
