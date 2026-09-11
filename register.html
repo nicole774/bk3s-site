@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Espace client — Inscription | BK Dimension 3S Consulting</title>
+<meta name="description" content="Créez votre compte client BK Dimension 3S Consulting pour accéder à votre espace." />
+<link rel="icon" href="assets/logo.jpeg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.jpeg" alt="Logo BK Dimension 3S Consulting" />
+      <span class="brand-text"><strong>BK Dimension</strong><span>3S Consulting</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="apropos.html">À propos</a></li>
+        <li><a href="activites.html">Nos activités</a></li>
+        <li><a href="offres.html">Offres d'emploi</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="login.html">Espace client</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <span class="nav-phone">(226) 70 94 60 96</span>
+      <a href="contact.html" class="btn btn-gold">Nous contacter</a>
+      <button class="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <span class="breadcrumb">Accueil / Espace client</span>
+    <h1 style="color:#fff; margin-top:14px;">Créer un compte</h1>
+    <p style="color:rgba(255,255,255,0.75); max-width:560px;">Inscrivez-vous pour accéder à votre espace client et suivre vos échanges avec notre équipe.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container" style="display:flex; justify-content:center;">
+    <div class="auth-card">
+      <span class="eyebrow">Inscription</span>
+      <h2 style="margin-bottom:8px;">Nouveau client ?</h2>
+      <p style="font-size:0.92rem; margin-bottom:22px;">Créez votre compte en quelques secondes.</p>
+
+      <form id="register-form" class="form-grid" novalidate>
+        <div>
+          <label for="register-name">Nom complet</label>
+          <input type="text" id="register-name" name="name" autocomplete="name" required />
+        </div>
+        <div>
+          <label for="register-email">Adresse email</label>
+          <input type="email" id="register-email" name="email" autocomplete="email" required />
+        </div>
+        <div>
+          <label for="register-password">Mot de passe</label>
+          <input type="password" id="register-password" name="password" autocomplete="new-password" minlength="8" required />
+        </div>
+        <div>
+          <label for="register-password2">Confirmer le mot de passe</label>
+          <input type="password" id="register-password2" name="password2" autocomplete="new-password" minlength="8" required />
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%; justify-content:center;">Créer mon compte</button>
+        <p id="register-status" class="form-status" role="alert"></p>
+      </form>
+
+      <p style="font-size:0.85rem; margin-top:18px;">Vous avez déjà un compte ? <a href="login.html" style="color:var(--navy); font-weight:600; text-decoration:underline;">Connectez-vous</a>.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer" id="footer"></footer>
+
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script src="js/footer.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Déjà connecté ? Aller directement à l'espace client.
+  if (BK3S_AUTH.currentUser()) {
+    window.location.replace("espace-client.html");
+    return;
+  }
+
+  var form = document.getElementById("register-form");
+  var status = document.getElementById("register-status");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = document.getElementById("register-name").value.trim();
+    var email = document.getElementById("register-email").value.trim();
+    var password = document.getElementById("register-password").value;
+    var password2 = document.getElementById("register-password2").value;
+
+    status.classList.remove("ok");
+    if (!name || !email || !password || !password2) {
+      status.textContent = "Veuillez remplir tous les champs.";
+      return;
+    }
+    if (password.length < 8) {
+      status.textContent = "Le mot de passe doit contenir au moins 8 caractères.";
+      return;
+    }
+    if (password !== password2) {
+      status.textContent = "Les deux mots de passe ne correspondent pas.";
+      return;
+    }
+
+    var session = BK3S_AUTH.register(name, email, password);
+    if (session) {
+      status.textContent = "Compte créé, redirection...";
+      status.classList.add("ok");
+      window.location.replace("espace-client.html");
+    } else {
+      status.textContent = "Un compte existe déjà avec cette adresse email.";
+      document.getElementById("register-password").value = "";
+      document.getElementById("register-password2").value = "";
+    }
+  });
+});
+</script>
+</body>
+</html>
