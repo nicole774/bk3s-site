@@ -432,6 +432,35 @@ textarea { resize: vertical; min-height: 130px; }
 .form-status { font-size: 0.9rem; margin-top: 10px; }
 .form-status.ok { color: #2f7a3d; }
 
+/* ---------- Espace client / login ---------- */
+.auth-card {
+  background: var(--paper-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 36px 34px;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 12px 32px rgba(14, 35, 80, 0.08);
+}
+.auth-demo-hint {
+  margin-top: 22px;
+  padding: 14px 16px;
+  border: 1px dashed var(--gold);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.auth-demo-hint strong {
+  color: var(--navy);
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+}
+
 /* ---------- Footer ---------- */
 footer.site-footer {
   background: var(--navy);

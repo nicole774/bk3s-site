@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <li><a href="activites.html">Nos activités</a></li>
             <li><a href="offres.html">Offres d'emploi</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">Espace client</a></li>
           </ul>
         </div>
 
