@@ -1,0 +1,357 @@
+// Schéma de la plateforme BK Dimension 3S Consulting
+// Couvre le modèle de données du cahier des charges §31 + notifications, audit, contact.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Énumérations ────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN // administrateur BK3S
+  CONSULTANT // consultant BK3S (recrutement opérationnel)
+  EDITOR // éditeur (contenus)
+  CANDIDATE // candidat
+  COMPANY // entreprise / recruteur
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum CompanyStatus {
+  PENDING // en attente de validation par BK3S
+  APPROVED
+  SUSPENDED
+}
+
+enum OfferStatus {
+  DRAFT // brouillon entreprise
+  PENDING_REVIEW // soumise à validation BK3S
+  PUBLISHED // en ligne
+  SUSPENDED // suspendue
+  CLOSED // clôturée
+  ARCHIVED // archivée
+}
+
+enum ContractType {
+  CDI
+  CDD
+  STAGE
+  CONSULTANCE
+  PRESTATION
+  MISSION
+  AUTRE
+}
+
+enum ApplicationStatus {
+  RECEIVED // candidature reçue
+  UNDER_REVIEW // en cours d'examen
+  SHORTLISTED // présélectionné
+  INTERVIEW // entretien
+  HIRED // retenu
+  REJECTED // non retenu
+  CLOSED // clôturée
+}
+
+enum Availability {
+  IMMEDIATE
+  UNDER_NOTICE // sous préavis
+  WITHIN_1_MONTH // dans 1 mois
+  WITHIN_3_MONTHS // dans 3 mois
+}
+
+enum DocumentType {
+  CV
+  MOTIVATION
+  CERTIFICATE
+  OTHER
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum RequestStatus {
+  NEW
+  IN_PROGRESS
+  COMPLETED
+}
+
+// ─── Utilisateurs ────────────────────────────────────────────────────────────
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  phone        String?
+  role         Role       @default(CANDIDATE)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  candidateProfile CandidateProfile?
+  company          Company?
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+  newsArticles     NewsArticle[]
+
+  @@map("users")
+}
+
+// ─── Candidats ───────────────────────────────────────────────────────────────
+
+model CandidateProfile {
+  id                String       @id @default(cuid())
+  userId            String       @unique
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title             String? // titre professionnel
+  summary           String? // résumé professionnel
+  skills            String[] // compétences
+  languages         String[] // langues
+  experienceYears   Int          @default(0)
+  educationLevel    String? // niveau de formation
+  sector            String? // domaine d'expertise
+  city              String?
+  country           String?      @default("Burkina Faso")
+  availability      Availability @default(IMMEDIATE)
+  visibleInCvtheque Boolean      @default(true) // consentement CVthèque
+  experiences       Json? // [{poste, entreprise, debut, fin, description}]
+  educations        Json? // [{diplome, etablissement, annee}]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  documents    Document[]
+  applications Application[]
+  favorites    Favorite[]
+
+  @@map("candidate_profiles")
+}
+
+// CV et pièces jointes stockés en base (bytea), servis avec contrôle d'accès.
+model Document {
+  id          String           @id @default(cuid())
+  candidateId String
+  candidate   CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  type        DocumentType     @default(CV)
+  filename    String
+  mimeType    String
+  size        Int
+  data        Bytes
+  isPrimary   Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  applications Application[]
+
+  @@map("documents")
+}
+
+// ─── Entreprises ─────────────────────────────────────────────────────────────
+
+model Company {
+  id          String        @id @default(cuid())
+  ownerUserId String        @unique
+  owner       User          @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  name        String
+  sector      String
+  address     String?
+  city        String?
+  country     String?       @default("Burkina Faso")
+  phone       String?
+  email       String?
+  website     String?
+  contactName String? // personne responsable
+  logo        Bytes?
+  logoMime    String?
+  description String?
+  status      CompanyStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  offers JobOffer[]
+
+  @@map("companies")
+}
+
+// ─── Offres d'emploi ─────────────────────────────────────────────────────────
+
+model JobOffer {
+  id              String       @id @default(cuid())
+  companyId       String
+  company         Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reference       String       @unique // ex. BK3S-2026-0001
+  title           String
+  sector          String?
+  location        String?
+  contractType    ContractType
+  experienceLevel String? // niveau d'expérience requis
+  educationLevel  String? // niveau de formation requis
+  skills          String[] // compétences recherchées
+  missions        String? // missions et responsabilités
+  profile         String? // profil recherché
+  conditions      String? // conditions éventuelles
+  salary          String?
+  positions       Int          @default(1) // nombre de postes
+  status          OfferStatus  @default(PENDING_REVIEW)
+  publishedAt     DateTime?
+  deadline        DateTime? // date limite de candidature
+  views           Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  applications Application[]
+  favorites    Favorite[]
+
+  @@index([status, publishedAt])
+  @@map("job_offers")
+}
+
+// ─── Candidatures ────────────────────────────────────────────────────────────
+
+model Application {
+  id          String            @id @default(cuid())
+  candidateId String
+  candidate   CandidateProfile  @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  offerId     String
+  offer       JobOffer          @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  documentId  String? // CV utilisé
+  document    Document?         @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  coverLetter String? // lettre de motivation
+  status      ApplicationStatus @default(RECEIVED)
+  statusNote  String? // note interne / message au candidat
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([candidateId, offerId])
+  @@map("applications")
+}
+
+model Favorite {
+  candidateId String
+  offerId     String
+  createdAt   DateTime @default(now())
+
+  candidate CandidateProfile @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  offer     JobOffer         @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@id([candidateId, offerId])
+  @@map("favorites")
+}
+
+// ─── Formations ──────────────────────────────────────────────────────────────
+
+model Formation {
+  id          String        @id @default(cuid())
+  title       String
+  theme       String?
+  description String?
+  objectives  String?
+  program     String?
+  audience    String? // public cible
+  trainer     String? // formateur
+  duration    String?
+  startDate   DateTime?
+  location    String?
+  price       String?
+  status      ContentStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("formations")
+}
+
+// ─── Actualités ──────────────────────────────────────────────────────────────
+
+model NewsArticle {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  category    String? // actualité, conseil RH, annonce, événement…
+  excerpt     String?
+  content     String
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  authorId    String?
+  author      User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("news_articles")
+}
+
+// ─── Demandes de devis / prestations (§19) ──────────────────────────────────
+
+model ServiceRequest {
+  id             String        @id @default(cuid())
+  name           String
+  organization   String?
+  phone          String?
+  email          String
+  service        String // prestation demandée
+  description    String
+  deadline       String? // délai souhaité
+  attachmentName String?
+  attachmentData Bytes?
+  attachmentMime String?
+  status         RequestStatus @default(NEW)
+  createdAt      DateTime      @default(now())
+
+  @@map("service_requests")
+}
+
+// ─── Messages de contact ─────────────────────────────────────────────────────
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+// ─── Notifications internes (§21) ────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String?
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+// ─── Journalisation des opérations importantes (§25) ────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String // ex. OFFER_PUBLISH, USER_SUSPEND
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("audit_logs")
+}
