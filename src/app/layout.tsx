@@ -30,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await getCurrentUser();
 
   return (
-    <html lang="fr" className={`${fraunces.variable} ${workSans.variable} h-full antialiased`}>
+    <html lang="fr" className={`${fraunces.variable} ${workSans.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
         <SiteHeader user={user ? { firstName: user.firstName, role: user.role } : null} />
         <main className="flex-1">{children}</main>
