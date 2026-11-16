@@ -1,0 +1,15 @@
+# Normalisation des fins de ligne pour tout le monde (Windows / macOS / Linux)
+# * text=auto     : Git détecte les fichiers texte et les stocke en LF dans le dépôt
+# * eol=lf        : les copies de travail utilisent aussi LF (standard du web) —
+#                   plus aucune conversion CRLF, donc plus d'avertissements
+* text=auto eol=lf
+
+# Les fichiers binaires ne doivent JAMAIS être transformés (aucune fin de ligne à convertir)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
