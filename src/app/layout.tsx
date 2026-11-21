@@ -1,13 +1,26 @@
 import type { Metadata } from "next";
-import { Fraunces, Work_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 import { getCurrentUser } from "@/lib/auth";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", weight: ["500", "600", "700"] });
-const workSans = Work_Sans({ subsets: ["latin"], variable: "--font-work-sans", weight: ["400", "500", "600", "700"] });
+// Polices auto-hébergées (licence OFL) : aucun téléchargement Google au build,
+// donc les déploiements ne dépendent plus du réseau.
+const fraunces = localFont({
+  src: "../fonts/fraunces-variable.ttf",
+  variable: "--font-fraunces",
+  display: "swap",
+  weight: "100 900",
+});
+
+const workSans = localFont({
+  src: "../fonts/work-sans-variable.ttf",
+  variable: "--font-work-sans",
+  display: "swap",
+  weight: "100 900",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.bk3sconsulting.com"),
