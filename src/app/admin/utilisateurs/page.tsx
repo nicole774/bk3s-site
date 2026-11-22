@@ -12,7 +12,8 @@ type Search = { q?: string; role?: string };
 const STATUS_TONES: Record<string, "green" | "red"> = { ACTIVE: "green", SUSPENDED: "red" };
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<Search> }) {
-  const me = await requireRole("ADMIN", "CONSULTANT", "EDITOR");
+  // §32 : la gestion des utilisateurs est réservée à l'ADMINISTRATEUR
+  const me = await requireRole("ADMIN");
   const { q, role } = await searchParams;
 
   const users = await prisma.user.findMany({

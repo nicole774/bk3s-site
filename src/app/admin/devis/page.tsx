@@ -9,7 +9,8 @@ const STATUS_LABELS: Record<string, string> = { NEW: "Nouvelle", IN_PROGRESS: "E
 const STATUS_TONES: Record<string, "amber" | "blue" | "green"> = { NEW: "amber", IN_PROGRESS: "blue", COMPLETED: "green" };
 
 export default async function AdminDevisPage() {
-  await requireRole("ADMIN", "CONSULTANT", "EDITOR");
+  // §32 : le suivi commercial est réservé à ADMIN et CONSULTANT
+  await requireRole("ADMIN", "CONSULTANT");
   const requests = await prisma.serviceRequest.findMany({ orderBy: { createdAt: "desc" } });
 
   return (

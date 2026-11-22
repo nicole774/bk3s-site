@@ -6,7 +6,8 @@ import { DashboardTitle } from "@/components/dashboard-shell";
 import { toggleMessageHandled } from "@/app/actions/admin";
 
 export default async function AdminMessagesPage() {
-  await requireRole("ADMIN", "CONSULTANT", "EDITOR");
+  // §32 : le suivi commercial est réservé à ADMIN et CONSULTANT
+  await requireRole("ADMIN", "CONSULTANT");
   const messages = await prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" } });
 
   return (

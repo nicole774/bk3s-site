@@ -240,7 +240,7 @@ export async function deleteArticle(formData: FormData) {
 // ─── Devis & messages (§19) ─────────────────────────────────────────────────
 
 export async function updateServiceRequestStatus(formData: FormData) {
-  const user = await team();
+  const user = await recruiters();
   if (!user) return;
   const id = str(formData, "id");
   const status = str(formData, "status") as RequestStatus;
@@ -251,7 +251,7 @@ export async function updateServiceRequestStatus(formData: FormData) {
 }
 
 export async function toggleMessageHandled(formData: FormData) {
-  const user = await team();
+  const user = await recruiters();
   if (!user) return;
   const id = str(formData, "id");
   const handled = formData.get("handled") === "true";
