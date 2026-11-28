@@ -356,3 +356,18 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_logs")
 }
+
+// ─── Tentatives de connexion (§25 : anti brute-force) ────────────────────────
+// Chaque enregistrement = un échec de connexion. Supprimés pour un compte après
+// une connexion réussie ; purgés par le cron keep-alive après 30 jours.
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  ipHash    String? // empreinte SHA-256 de l'IP — jamais l'IP brute (§26)
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([ipHash, createdAt])
+  @@map("login_attempts")
+}
