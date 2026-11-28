@@ -21,5 +21,10 @@ export async function GET(req: NextRequest) {
 
   const users = await prisma.user.count();
 
-  return NextResponse.json({ ok: true, users, at: new Date().toISOString() });
+  // Ménage quotidien : purge des tentatives de connexion de plus de 30 jours
+  const purged = await prisma.loginAttempt.deleteMany({
+    where: { createdAt: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+  });
+
+  return NextResponse.json({ ok: true, users, purged: purged.count, at: new Date().toISOString() });
 }

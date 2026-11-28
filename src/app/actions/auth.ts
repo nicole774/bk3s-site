@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { createSession, destroySession, hashPassword, verifyPassword } from "@/lib/auth";
+import { clientIpHash, loginBlocked, recordFailedLogin, clearLoginFailures } from "@/lib/rate-limit";
 import { notifyAdminTeam } from "@/lib/notify";
 import { str, optionalStr } from "@/lib/utils";
 
@@ -106,14 +107,21 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
 
   if (!email || !password) return { error: "Merci de saisir votre e-mail et votre mot de passe." };
 
+  // §25 — anti brute-force : on bloque si trop d'échecs récents
+  const ipHash = await clientIpHash();
+  const blocked = await loginBlocked(email, ipHash);
+  if (blocked) return { error: blocked };
+
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    await recordFailedLogin(email, ipHash);
     return { error: "E-mail ou mot de passe incorrect." };
   }
   if (user.status === "SUSPENDED") {
-    return { error: "Votre compte est suspendu. Contactez-nous à " + "contact@bk3sconsulting.com" + "." };
+    return { error: "Votre compte est suspendu. Contactez-nous à contact@bk3sconsulting.com." };
   }
 
+  await clearLoginFailures(email);
   await createSession(user.id, user.role);
 
   if (next.startsWith("/") && !next.startsWith("//")) redirect(next);
